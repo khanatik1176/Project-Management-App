@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
-import { ProviderEnumType } from "../enums/account.provider.enum";
+import { ProviderEnum, ProviderEnumType } from "../enums/account.provider.enum";
 
 export interface AccountDocument extends Document {
 
@@ -34,10 +34,10 @@ const accountSchema = new Schema<AccountDocument>(
   {
     timestamps: true,
     toJSON: {
-      transform(doc, ret) {
-        delete ret.refreshToken;
+        transform(doc, ret) {
+          delete (ret as any).refreshToken;
+        },
       },
-    },
   }
 );
 
