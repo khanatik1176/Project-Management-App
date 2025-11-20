@@ -6,6 +6,9 @@ import { config } from "./config/app.config";
 import connectDatabase from "./config/database.config";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
 import { HTTPSTATUS } from "./config/http.config";
+import passport from "passport";
+import "./config/passport.config";
+import authRoutes from "./routes/auth.route";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
@@ -33,9 +36,14 @@ app.use(
     })
 );
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.get(`/`, (req: Request, res: Response, next: NextFunction) => {
     res.status(HTTPSTATUS.OK).send(`API is running on path ${BASE_PATH}`);
 });
+
+app.use(`${BASE_PATH}/auth`, authRoutes);
   
 
 app.use(errorHandler);
