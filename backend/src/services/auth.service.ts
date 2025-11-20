@@ -7,6 +7,7 @@ import { Roles } from "../enums/role.enum";
 import MemberModel from "../models/member.model";
 import { ProviderEnum } from "../enums/account.provider.enum";
 import { use } from "passport";
+import { NotFoundException, UnauthorizedException } from "../utils/appError";
 
 export const loginOrCreateAccountService = async (data: 
     {
@@ -186,8 +187,23 @@ export const verifyUserService = async ({
 
     if(!account)
     {
-        throw new Error('Invalid email or password');
+        throw new NotFoundException('Invalid email or password');
     }
 
-    
+    const user = await UserModel.findById(account.userId);
+
+    if(!user)
+    {
+        throw new NotFoundException('User not found for the given account');
+    }
+
+    const isMatch = await user.comparePassword(password);
+
+    if(!isMatch)
+    {
+        throw new UnauthorizedException('Invalid email or password');
+    }
+
+    return user.omitPassword();
+
 }
