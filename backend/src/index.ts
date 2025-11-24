@@ -3,6 +3,17 @@ import express, {NextFunction,Request,Response} from "express";
 import cors from "cors";
 import session from "cookie-session";
 import { config } from "./config/app.config";
+import connectDatabase from "./config/database.config";
+import { errorHandler } from "./middlewares/errorHandler.middleware";
+import { HTTPSTATUS } from "./config/http.config";
+import passport from "passport";
+import "./config/passport.config";
+import authRoutes from "./routes/auth.route";
+import userRoutes from "./routes/user.route";
+import isAuthenticated from "./middlewares/isAuthenticate.middleware";
+import workSpaceRoutes from "./routes/workspace.route";
+import memberRoutes from "./routes/member.route";
+import projectRoutes from "./routes/project.route";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
@@ -30,10 +41,23 @@ app.use(
     })
 );
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.get(`/`, (req: Request, res: Response, next: NextFunction) => {
-    res.status(200).send(`API is running on path ${BASE_PATH}`);
+    res.status(HTTPSTATUS.OK).send(`API is running on path ${BASE_PATH}`);
 });
-  
-app.listen(config.PORT, () => {
+
+app.use(`${BASE_PATH}/auth`, authRoutes);
+app.use(`${BASE_PATH}/user`, isAuthenticated, userRoutes); 
+app.use(`${BASE_PATH}/workspace`, isAuthenticated, workSpaceRoutes); 
+app.use(`${BASE_PATH}/member`, isAuthenticated, memberRoutes); 
+app.use(`${BASE_PATH}/project`, isAuthenticated, projectRoutes); 
+app.use(`${BASE_PATH}/task`, isAuthenticated, taskRoutes);    
+
+app.use(errorHandler);
+
+app.listen(config.PORT, async () => {
     console.log(`Server is running on port ${config.PORT} in ${config.NODE_ENV} mode`);
+    await connectDatabase();
 });
