@@ -5,5 +5,4 @@ const userRoutes = Router();
 
 userRoutes.get("/current", getCurrentUserController);
 
-
 export default userRoutes;

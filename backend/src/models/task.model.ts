@@ -1,7 +1,11 @@
 import mongoose, { Document, Schema } from "mongoose";
-
+import {
+  TaskPriorityEnum,
+  TaskPriorityEnumType,
+  TaskStatusEnum,
+  TaskStatusEnumType,
+} from "../enums/task.enum";
 import { generateTaskCode } from "../utils/uuid";
-import { TaskPriorityEnum, TaskPriorityEnumType, TaskStatusEnum, TaskStatusEnumType } from "../enums/task.enum";
 
 export interface TaskDocument extends Document {
   taskCode: string;
